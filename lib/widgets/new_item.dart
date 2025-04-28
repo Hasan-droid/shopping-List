@@ -23,16 +23,23 @@ class _NewItemState extends State<NewItem> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
       final url = Uri.https("shopping-list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
-      await http.post(
+      final response = await http.post(
         url,
-        headers: {"Content-Type": "application/json"},
+        headers: {"content-type": "application/json"},
         body: json.encode({
           "category": _selectedCategory.name,
           "name": _enteredName,
           "quantity": _enteredQuantity,
         }),
       );
-      // Navigator.of(context).pop();
+
+      // checks if the widget's context is still "mounted" (valid and attached to the widget tree)
+      //before continuing with operations that use that context (like navigation).
+      if (!context.mounted) {
+        return;
+      }
+
+      Navigator.of(context).pop();
     }
   }
 
