@@ -19,10 +19,17 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   List<GroceryItem> _groceryItems = [];
   var _isLoadingData = true;
+  String? _error;
 
   void loadData() async {
-    final url = Uri.https("shopping-list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
+    final url = Uri.https("list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
+
     final response = await http.get(url, headers: {"content-type": "application/json"});
+    if (response.statusCode >= 400) {
+      setState(() {
+        _error = "something went wrong try again later";
+      });
+    }
     final Map<String, dynamic> listData = json.decode(response.body);
 
     final List<GroceryItem> loadedItems = [];
@@ -95,6 +102,10 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
       );
+    }
+
+    if (_error != null) {
+      content = Center(child: Text(_error!));
     }
     return MaterialApp(
       title: 'Flutter Groceries',
