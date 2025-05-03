@@ -18,6 +18,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<GroceryItem> _groceryItems = [];
+  var _isLoadingData = true;
 
   void loadData() async {
     final url = Uri.https("shopping-list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
@@ -40,6 +41,7 @@ class _MyAppState extends State<MyApp> {
     }
     setState(() {
       _groceryItems = loadedItems;
+      _isLoadingData = false;
     });
   }
 
@@ -67,6 +69,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     Widget content = Center(child: Text("You have no items yet", style: TextStyle(fontSize: 24)));
+
+    if (_isLoadingData) {
+      content = const Center(child: CircularProgressIndicator());
+    }
 
     if (_groceryItems.isNotEmpty) {
       content = ListView.builder(
