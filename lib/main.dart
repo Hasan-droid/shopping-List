@@ -22,7 +22,7 @@ class _MyAppState extends State<MyApp> {
   String? _error;
 
   void loadData() async {
-    final url = Uri.https("list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
+    final url = Uri.https("shopping-list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
 
     final response = await http.get(url, headers: {"content-type": "application/json"});
     if (response.statusCode >= 400) {
@@ -66,10 +66,19 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
-  void removeItem(GroceryItem item) {
+  void removeItem(GroceryItem item) async {
+    final url = Uri.https("shopping-list-296e9-default-rtdb.firebaseio.com", "shopping-list/${item.id}.json");
+    final index = _groceryItems.indexOf(item);
     setState(() {
       _groceryItems.remove(item);
     });
+
+    final response = await http.delete(url);
+    if (response.statusCode >= 400) {
+      setState(() {
+        _groceryItems.insert(index, item);
+      });
+    }
   }
 
   // This widget is the root of your application.
