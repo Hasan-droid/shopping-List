@@ -23,41 +23,41 @@ class _MyAppState extends State<MyApp> {
 
   void loadData() async {
     final url = Uri.https("shopping-list-296e9-default-rtdb.firebaseio.com", "shopping-list.json");
+    try {
+      final response = await http.get(url, headers: {"content-type": "application/json"});
 
-    final response = await http.get(url, headers: {"content-type": "application/json"});
-    if (response.statusCode >= 400) {
+      if (response.body == "null") {
+        setState(() {
+          _isLoadingData = false;
+        });
+        return;
+      }
+
+      final Map<String, dynamic> listData = json.decode(response.body);
+
+      final List<GroceryItem> loadedItems = [];
+
+      for (final item in listData.entries) {
+        final category =
+            categories.entries.firstWhere((cate) => cate.value.name == item.value['category']).value;
+        loadedItems.add(
+          GroceryItem(
+            id: item.key,
+            name: item.value["name"],
+            quantity: item.value["quantity"],
+            category: category,
+          ),
+        );
+      }
+      setState(() {
+        _groceryItems = loadedItems;
+        _isLoadingData = false;
+      });
+    } catch (err) {
       setState(() {
         _error = "something went wrong try again later";
       });
     }
-
-    if (response.body == "null") {
-      setState(() {
-        _isLoadingData = false;
-      });
-      return;
-    }
-
-    final Map<String, dynamic> listData = json.decode(response.body);
-
-    final List<GroceryItem> loadedItems = [];
-
-    for (final item in listData.entries) {
-      final category =
-          categories.entries.firstWhere((cate) => cate.value.name == item.value['category']).value;
-      loadedItems.add(
-        GroceryItem(
-          id: item.key,
-          name: item.value["name"],
-          quantity: item.value["quantity"],
-          category: category,
-        ),
-      );
-    }
-    setState(() {
-      _groceryItems = loadedItems;
-      _isLoadingData = false;
-    });
   }
 
   @override
