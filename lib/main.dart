@@ -30,6 +30,14 @@ class _MyAppState extends State<MyApp> {
         _error = "something went wrong try again later";
       });
     }
+
+    if (response.body == "null") {
+      setState(() {
+        _isLoadingData = false;
+      });
+      return;
+    }
+
     final Map<String, dynamic> listData = json.decode(response.body);
 
     final List<GroceryItem> loadedItems = [];
