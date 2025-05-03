@@ -24,12 +24,12 @@ class _MyAppState extends State<MyApp> {
     final response = await http.get(url, headers: {"content-type": "application/json"});
     final Map<String, dynamic> listData = json.decode(response.body);
 
-    final List<GroceryItem> _loadedItems = [];
+    final List<GroceryItem> loadedItems = [];
 
     for (final item in listData.entries) {
       final category =
           categories.entries.firstWhere((cate) => cate.value.name == item.value['category']).value;
-      _loadedItems.add(
+      loadedItems.add(
         GroceryItem(
           id: item.key,
           name: item.value["name"],
@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
       );
     }
     setState(() {
-      _groceryItems = _loadedItems;
+      _groceryItems = loadedItems;
     });
   }
 
@@ -52,8 +52,9 @@ class _MyAppState extends State<MyApp> {
 
   void _moveToNewItemForm(BuildContext context) async {
     final newItem = await Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => NewItem()));
-
-    loadData();
+    setState(() {
+      _groceryItems.add(newItem);
+    });
   }
 
   void removeItem(GroceryItem item) {

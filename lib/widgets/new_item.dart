@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shopping_list/data/categories.dart';
 import 'package:shopping_list/models/category.dart';
 import "package:http/http.dart" as http;
+import 'package:shopping_list/models/grocery_item.dart';
 
 class NewItem extends StatefulWidget {
   const NewItem({super.key});
@@ -32,14 +33,21 @@ class _NewItemState extends State<NewItem> {
           "quantity": _enteredQuantity,
         }),
       );
-
+      final Map<String, dynamic> resData = json.decode(response.body);
       // checks if the widget's context is still "mounted" (valid and attached to the widget tree)
       //before continuing with operations that use that context (like navigation).
       if (!context.mounted) {
         return;
       }
 
-      Navigator.of(context).pop();
+      Navigator.of(context).pop(
+        GroceryItem(
+          id: resData["name"],
+          name: _enteredName,
+          quantity: _enteredQuantity,
+          category: _selectedCategory,
+        ),
+      );
     }
   }
 
